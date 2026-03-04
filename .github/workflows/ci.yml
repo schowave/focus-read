@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Lint with ruff
+        run: |
+          pip install ruff
+          ruff check backend/
+
+      - name: Smoke test — OCR on example image
+        run: |
+          python -c "
+          import sys; sys.path.insert(0, 'backend')
+          from ocr import extract_words
+          words = extract_words('examples/buchcover-waschbaer.webp')
+          assert len(words) > 0, 'No words detected'
+          texts = [w['text'] for w in words]
+          print(f'{len(words)} words detected: {texts}')
+          assert any('Waschbär' in t for t in texts), 'Expected word Waschbär not found'
+          "
+
+      - name: Verify FastAPI app starts
+        run: |
+          timeout 5 python -c "
+          import sys; sys.path.insert(0, 'backend')
+          from main import app
+          from fastapi.testclient import TestClient
+          client = TestClient(app)
+          resp = client.get('/')
+          assert resp.status_code == 200
+          print('FastAPI serves frontend OK')
+          " || [ $? -eq 124 ]

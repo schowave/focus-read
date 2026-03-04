@@ -1,4 +1,4 @@
-.PHONY: install run clean test
+.PHONY: install run clean test lint
 
 install: venv
 	@echo "✓ Ready. Run 'make run' to start."
@@ -11,8 +11,12 @@ venv: backend/requirements.txt
 run: venv
 	venv/bin/python backend/main.py
 
+lint: venv
+	venv/bin/pip install -q ruff
+	venv/bin/ruff check backend/
+
 test: venv
-	@echo "Running OCR on shopping.webp..."
+	@echo "Running OCR on example image..."
 	@venv/bin/python -c "\
 		import sys; sys.path.insert(0, 'backend'); \
 		from ocr import extract_words; \
