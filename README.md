@@ -42,48 +42,45 @@ Open `http://localhost:8000` on your phone/tablet (same network).
 
 ## Use case
 
-```plantuml
-@startuml Focus Read - Use Case
-skinparam style strictuml
-skinparam sequenceMessageAlign center
+```mermaid
+sequenceDiagram
+    actor Kind
+    participant Browser as Browser (Tablet)
+    participant Server as FastAPI Server
+    participant OCR as docTR (OCR)
 
-actor Kind as child
-participant "Browser\n(Tablet)" as browser
-participant "FastAPI\nServer" as server
-participant "docTR\n(OCR)" as ocr
-
-== Seite fotografieren ==
-
-child -> browser : Tippt "Seite fotografieren"
-browser -> browser : Öffnet Kamera
-child -> browser : Macht Foto
-browser -> server : POST /api/ocr (image)
-server -> ocr : Texterkennung starten
-ocr -> ocr : Detection (db_resnet50):\nTextregionen finden
-ocr -> ocr : Recognition (PARSeq):\nWörter lesen
-ocr --> server : Words [{text, x, y, w, h, conf}]
-server -> server : Noise-Filter anwenden
-server --> browser : JSON {image_url, words}
-browser -> browser : Bild anzeigen +\nWort-Overlays erzeugen
-
-== Wort für Wort lesen ==
-
-loop Für jedes Wort
-    child -> browser : Tippt →
-    browser -> browser : Nächstes Wort\ngelb hervorheben
-    browser -> browser : Wort groß anzeigen
-
-    alt TTS aktiviert
-        browser -> browser : speechSynthesis.speak(wort)
+    rect rgb(240, 248, 255)
+    Note over Kind, OCR: Capture page
+    Kind->>Browser: Tap "Seite fotografieren"
+    Browser->>Browser: Open camera
+    Kind->>Browser: Take photo
+    Browser->>Server: POST /api/ocr (image)
+    Server->>OCR: Start recognition
+    OCR->>OCR: Detection (db_resnet50)
+    OCR->>OCR: Recognition (PARSeq)
+    OCR-->>Server: Words [{text, x, y, w, h, conf}]
+    Server->>Server: Apply noise filter
+    Server-->>Browser: JSON {image_url, words}
+    Browser->>Browser: Show image + word overlays
     end
-end
 
-== Neue Seite ==
+    rect rgb(245, 255, 245)
+    Note over Kind, OCR: Read word by word
+    loop For each word
+        Kind->>Browser: Tap →
+        Browser->>Browser: Highlight next word (yellow)
+        Browser->>Browser: Display word large
+        alt TTS enabled
+            Browser->>Browser: speechSynthesis.speak(word)
+        end
+    end
+    end
 
-child -> browser : Tippt "Neue Seite"
-browser -> browser : Zurück zum Startbildschirm
-
-@enduml
+    rect rgb(255, 245, 245)
+    Note over Kind, OCR: New page
+    Kind->>Browser: Tap "Neue Seite"
+    Browser->>Browser: Back to start screen
+    end
 ```
 
 ## Architecture Decision Records
