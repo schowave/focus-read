@@ -9,24 +9,6 @@ A reading aid for children: capture a book page, then read word-by-word with hig
 3. Tap/click to advance through words one at a time
 4. Each word is highlighted and optionally spoken aloud
 
-## Architecture
-
-```mermaid
-graph LR
-    subgraph Tablet/Phone Browser
-        A[Camera Capture] --> B[Upload Image]
-        D[Display Image + Word Overlays] --> E[Tap to Navigate]
-        E --> F[TTS: speechSynthesis]
-    end
-
-    subgraph Server
-        C[docTR OCR<br/>detect + recognize]
-    end
-
-    B -- POST /api/ocr --> C
-    C -- JSON words + bboxes --> D
-```
-
 ## Prerequisites
 
 - **Python 3.10+**
@@ -57,6 +39,10 @@ Open `http://localhost:8000` on your phone/tablet (same network).
 - **Frontend:** Vanilla HTML/JS/CSS
 - **OCR:** [docTR](https://github.com/mindee/doctr) (PyTorch) with [multilingual PARSeq](https://huggingface.co/Felix92/doctr-torch-parseq-multilingual-v1) recognition model
 - **TTS:** Web Speech API (rate 0.8, toggleable)
+
+## Use case
+
+See [`docs/use-case.puml`](docs/use-case.puml) for the full PlantUML sequence diagram.
 
 ## Architecture Decision Records
 
