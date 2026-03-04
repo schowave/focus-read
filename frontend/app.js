@@ -1,5 +1,4 @@
 const cameraInput = document.getElementById("camera-input");
-const langSelect = document.getElementById("lang-select");
 const startScreen = document.getElementById("start-screen");
 const loadingScreen = document.getElementById("loading-screen");
 const readerScreen = document.getElementById("reader-screen");
@@ -7,7 +6,7 @@ const pageImage = document.getElementById("page-image");
 const overlaysDiv = document.getElementById("overlays");
 const wordDisplay = document.getElementById("word-display");
 const btnBack = document.getElementById("btn-back");
-const btnSpeak = document.getElementById("btn-speak");
+const btnTts = document.getElementById("btn-tts");
 const btnNext = document.getElementById("btn-next");
 const btnNew = document.getElementById("btn-new");
 
@@ -15,27 +14,7 @@ let words = [];
 let currentIndex = -1;
 let imageWidth = 0;
 let imageHeight = 0;
-let ttsLang = "de-DE";
-
-// Load available languages
-(async () => {
-  try {
-    const res = await fetch("/api/languages");
-    const langs = await res.json();
-    for (const [code, info] of Object.entries(langs)) {
-      const opt = document.createElement("option");
-      opt.value = code;
-      opt.textContent = info.label;
-      langSelect.appendChild(opt);
-    }
-  } catch {
-    // Fallback: just show German
-    const opt = document.createElement("option");
-    opt.value = "de";
-    opt.textContent = "Deutsch";
-    langSelect.appendChild(opt);
-  }
-})();
+let ttsEnabled = true;
 
 function showScreen(screen) {
   document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
@@ -51,7 +30,6 @@ cameraInput.addEventListener("change", async (e) => {
 
   const form = new FormData();
   form.append("image", file);
-  form.append("lang", langSelect.value);
 
   try {
     const res = await fetch("/api/ocr", { method: "POST", body: form });
@@ -60,7 +38,6 @@ cameraInput.addEventListener("change", async (e) => {
     words = data.words;
     imageWidth = data.image_width;
     imageHeight = data.image_height;
-    ttsLang = data.tts_lang;
     pageImage.src = data.image_url;
 
     pageImage.onload = () => {
@@ -70,7 +47,7 @@ cameraInput.addEventListener("change", async (e) => {
       showScreen(readerScreen);
     };
   } catch (err) {
-    alert("Error: " + err.message);
+    alert("Fehler bei der Texterkennung: " + err.message);
     showScreen(startScreen);
   }
 });
@@ -105,7 +82,7 @@ function goToWord(index) {
   }
 
   wordDisplay.textContent = words[index].text;
-  speak(words[index].text);
+  if (ttsEnabled) speak(words[index].text);
 }
 
 function advance(dir) {
@@ -116,17 +93,22 @@ function advance(dir) {
 function speak(text) {
   speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = ttsLang;
+  utter.lang = "de-DE";
   utter.rate = 0.8;
   speechSynthesis.speak(utter);
 }
 
+// TTS toggle
+btnTts.addEventListener("click", () => {
+  ttsEnabled = !ttsEnabled;
+  btnTts.textContent = ttsEnabled ? "Vorlesen: An" : "Vorlesen: Aus";
+  btnTts.classList.toggle("off", !ttsEnabled);
+  if (!ttsEnabled) speechSynthesis.cancel();
+});
+
 // Controls
 btnNext.addEventListener("click", () => advance(1));
 btnBack.addEventListener("click", () => advance(-1));
-btnSpeak.addEventListener("click", () => {
-  if (currentIndex >= 0) speak(words[currentIndex].text);
-});
 btnNew.addEventListener("click", () => {
   cameraInput.value = "";
   wordDisplay.textContent = "";

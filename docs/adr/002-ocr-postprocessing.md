@@ -1,53 +1,53 @@
-# ADR-002: OCR-Nachverarbeitung
+# ADR-002: OCR Post-Processing
 
 ## Status
 Accepted
 
-## Kontext
-OCR-Engines liefern neben echtem Text auch Artefakte: Barcode-Fragmente, Verlagslogos, ISBN-Nummern, Illustrationsrauschen. Zusätzlich können einzelne Wörter falsch erkannt werden.
+## Context
+OCR engines produce artifacts alongside real text: barcode fragments, publisher logos, ISBN numbers, illustration noise. Additionally, individual words may be misrecognized.
 
-## Bewertete Optionen für Textkorrektur
+## Considered Options for Text Correction
 
-### Kein Post-Processing
-- Einfachste Lösung
-- Noise bleibt sichtbar → schlechte UX für Kinder
+### No post-processing
+- Simplest solution
+- Noise remains visible → poor UX for children
 
-### pyspellchecker (Rechtschreibprüfung)
-- **Getestet:** Korrigiert `aufregendi` → `aufregend`, aber:
-  - Kann kontextabhängige Fehler nicht erkennen (`finder` ist ein gültiges Wort)
-  - Mangelt Komposita (`Schatzsuche` → `Schatzsucher`) und Namen (`Mono` → `Mond`)
-  - Verliert Interpunktion (`aufregend!,` → `aufregend,`)
-- **Fazit:** Zu viele Nebenwirkungen für zu wenig Nutzen
+### pyspellchecker (spell checking)
+- **Tested:** Corrects `aufregendi` → `aufregend`, but:
+  - Cannot detect context-dependent errors (`finder` is a valid word)
+  - Mangles compound words (`Schatzsuche` → `Schatzsucher`) and names (`Mono` → `Mond`)
+  - Loses punctuation (`aufregend!,` → `aufregend,`)
+- **Verdict:** Too many side effects for too little benefit
 
-### LanguageTool (Grammatikprüfung)
-- **Getestet:** Versprach Satzkontext-basierte Korrektur, aber:
-  - `aufregendi` → `aufregend` (gleich wie Spell-Checker)
-  - `Mono` → `Mond` (Name zerstört)
-  - `finder` → `Finder` (nur Großschreibung, nicht `findet`)
-  - 253MB Java-Server als Dependency
-- **Fazit:** Kein Mehrwert gegenüber Spell-Checker, schwerere Dependency
+### LanguageTool (grammar checking)
+- **Tested:** Promised sentence-context correction, but:
+  - `aufregendi` → `aufregend` (same as spell-checker)
+  - `Mono` → `Mond` (name destroyed)
+  - `finder` → `Finder` (only capitalization, not `findet`)
+  - 253MB Java server as dependency
+- **Verdict:** No improvement over spell-checker, heavier dependency
 
-### LLM-basierte Korrektur (z.B. Claude API)
-- Würde kontextabhängige Fehler lösen
-- Benötigt API-Key und Internetverbindung
-- Kosten pro Anfrage
-- Overkill wenn die OCR-Engine selbst besser wird
+### LLM-based correction (e.g. Claude API)
+- Would solve context-dependent errors
+- Requires API key and internet connection
+- Cost per request
+- Overkill when the OCR engine itself can be improved
 
-### Noise-Filter ✅ Gewählt
-- Regelbasierter Filter, der Nicht-Wort-Artefakte entfernt
-- Kein Versuch, erkannte Wörter zu "verbessern" (das macht die OCR-Engine)
+### Noise filter ✅ Chosen
+- Rule-based filter that removes non-word artifacts
+- No attempt to "improve" recognized words (that's the OCR engine's job)
 
-## Entscheidung
-**Nur Noise-Filter, keine Textkorrektur.** Der Wechsel zu docTR (ADR-001) hat die Textkorrektur-Probleme an der Wurzel gelöst. Der Noise-Filter entfernt:
-- Einzelne Nicht-Buchstaben-Zeichen
-- Reine Zahlen (Barcodes)
-- Zahl-Buchstaben-Mischungen (`44674_`)
-- Text mit Klammern (OCR-Artefakte)
-- URLs/Domains (Verlagswebsites)
-- Low-Confidence-Erkennungen (< 85%)
+## Decision
+**Noise filter only, no text correction.** Switching to docTR (ADR-001) solved the text correction problems at the root. The noise filter removes:
+- Single non-letter characters
+- Pure numbers (barcodes)
+- Digit-letter mixtures (`44674_`)
+- Text with parentheses/brackets (OCR artifacts)
+- URLs/domains (publisher websites)
+- Low-confidence recognitions (< 85%)
 
-## Konsequenzen
-- Keine zusätzlichen Dependencies (pyspellchecker, LanguageTool)
-- Einfacher, deterministischer Code (~20 Zeilen)
-- Korrekturen passieren in der OCR-Engine selbst, nicht im Post-Processing
-- Lerneffekt: Besser die richtige Engine wählen als eine schlechte Engine mit Post-Processing zu flicken
+## Consequences
+- No additional dependencies (pyspellchecker, LanguageTool)
+- Simple, deterministic code (~20 lines)
+- Corrections happen in the OCR engine itself, not in post-processing
+- Lesson learned: better to choose the right engine than to patch a weak engine with post-processing

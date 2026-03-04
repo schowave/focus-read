@@ -1,41 +1,49 @@
-# ADR-003: Anwendungsarchitektur
+# ADR-003: Application Architecture
 
 ## Status
 Accepted
 
-## Kontext
-Die App soll auf Tablets/Phones von Kindern genutzt werden: Buchseite fotografieren, Wörter einzeln hervorheben, vorlesen.
+## Context
+The app is intended for use by children on tablets/phones: photograph a book page, highlight words one at a time, read aloud.
 
-## Bewertete Optionen
+## Considered Options
 
-### Native App (iOS/Android)
-- Beste Kamera-Integration und Performance
-- Zwei Codebases oder React Native/Flutter
-- App-Store-Deployment nötig
-- Overkill für den Anwendungsfall
+### Native app (iOS/Android)
+- Best camera integration and performance
+- Two codebases or React Native/Flutter
+- App store deployment required
+- Overkill for this use case
 
-### Electron/Desktop-App
-- Kein Kamerazugang auf Tablets
-- Nicht für den Anwendungsfall geeignet
+### Electron/Desktop app
+- No camera access on tablets
+- Not suitable for this use case
 
-### Python-Backend + Web-Frontend ✅ Gewählt
-- **Backend:** FastAPI — minimaler HTTP-Server, statische Dateien, ein OCR-Endpoint
-- **Frontend:** Vanilla HTML/JS/CSS — kein Build-Step, kein Framework
-- **Kamera:** `<input type="file" capture="environment">` — nutzt die native Kamera-App des Geräts
-- **TTS:** Web Speech API (`speechSynthesis`) — im Browser eingebaut, keine Dependency
+### Python backend + web frontend ✅ Chosen
+- **Backend:** FastAPI — minimal HTTP server, static files, one OCR endpoint
+- **Frontend:** Vanilla HTML/JS/CSS — no build step, no framework
+- **Camera:** `<input type="file" capture="environment">` — uses the device's native camera app
+- **TTS:** Web Speech API (`speechSynthesis`) — built into the browser, no dependency
 
-## Entscheidung
-**FastAPI + Vanilla-Frontend.** Minimale Architektur:
+## Decision
+**FastAPI + vanilla frontend.** Minimal architecture:
 
+```mermaid
+sequenceDiagram
+    participant B as Browser (Tablet)
+    participant S as FastAPI Server
+
+    B->>B: Capture photo via camera input
+    B->>S: POST /api/ocr (image)
+    S->>S: docTR: detect + recognize words
+    S-->>B: JSON {image_url, words: [{text, x, y, w, h}]}
+    B->>B: Display image with word overlays
+    B->>B: Tap → highlight next word
+    B->>B: speechSynthesis.speak(word)
 ```
-[Browser] → Foto aufnehmen → POST /api/ocr → [FastAPI + docTR]
-[Browser] ← JSON (words + bboxes) ← [FastAPI]
-[Browser] → Wörter als Overlays anzeigen → Tap navigiert → TTS spricht vor
-```
 
-## Konsequenzen
-- Ein einziger `make run` startet alles
-- Funktioniert auf jedem Gerät im selben Netzwerk
-- Kein Build-Step, kein npm, kein Bundler
-- OCR läuft auf dem Server (CPU-intensiv) — nicht auf dem Tablet
-- TTS läuft im Browser — keine Server-Abhängigkeit für Audio
+## Consequences
+- A single `make run` starts everything
+- Works on any device on the same network
+- No build step, no npm, no bundler
+- OCR runs on the server (CPU-intensive) — not on the tablet
+- TTS runs in the browser — no server dependency for audio

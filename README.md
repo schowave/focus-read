@@ -7,7 +7,25 @@ A reading aid for children: capture a book page, then read word-by-word with hig
 1. Take a photo of a book page (or upload an image)
 2. OCR detects every word with its position on the page
 3. Tap/click to advance through words one at a time
-4. Each word is highlighted and spoken aloud
+4. Each word is highlighted and optionally spoken aloud
+
+## Architecture
+
+```mermaid
+graph LR
+    subgraph Tablet/Phone Browser
+        A[Camera Capture] --> B[Upload Image]
+        D[Display Image + Word Overlays] --> E[Tap to Navigate]
+        E --> F[TTS: speechSynthesis]
+    end
+
+    subgraph Server
+        C[docTR OCR<br/>detect + recognize]
+    end
+
+    B -- POST /api/ocr --> C
+    C -- JSON words + bboxes --> D
+```
 
 ## Prerequisites
 
@@ -26,20 +44,22 @@ Open `http://localhost:8000` on your phone/tablet (same network).
 
 ## Commands
 
-| Command       | Description                          |
-|---------------|--------------------------------------|
-| `make install`| Create virtualenv and install deps   |
-| `make run`    | Start the server on port 8000        |
-| `make test`   | Run OCR on `shopping.webp` (smoke test) |
-| `make clean`  | Remove virtualenv and uploaded files |
-
-## Supported languages
-
-German, English, French, Spanish, Portuguese — select in the UI before capturing.
+| Command       | Description                            |
+|---------------|----------------------------------------|
+| `make install`| Create virtualenv and install deps     |
+| `make run`    | Start the server on port 8000          |
+| `make test`   | Run OCR on example image (smoke test)  |
+| `make clean`  | Remove virtualenv and uploaded files   |
 
 ## Tech stack
 
 - **Backend:** FastAPI
 - **Frontend:** Vanilla HTML/JS/CSS
-- **OCR:** docTR (PyTorch) with multilingual PARSeq recognition model
-- **TTS:** Web Speech API (rate 0.8)
+- **OCR:** [docTR](https://github.com/mindee/doctr) (PyTorch) with [multilingual PARSeq](https://huggingface.co/Felix92/doctr-torch-parseq-multilingual-v1) recognition model
+- **TTS:** Web Speech API (rate 0.8, toggleable)
+
+## Architecture Decision Records
+
+- [ADR-001: OCR Engine Selection](docs/adr/001-ocr-engine.md) — why docTR over Tesseract, PaddleOCR, Surya, EasyOCR
+- [ADR-002: OCR Post-Processing](docs/adr/002-ocr-postprocessing.md) — why noise filter only, no spell-checker or LLM
+- [ADR-003: Application Architecture](docs/adr/003-architektur.md) — why FastAPI + vanilla frontend
