@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Focus Read</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="start-screen" class="screen active">
+    <h1>Focus Read</h1>
+    <p>Fotografiere eine Buchseite und lies Wort für Wort.</p>
+    <label class="capture-btn" for="camera-input">Seite fotografieren</label>
+    <input type="file" id="camera-input" accept="image/*" capture="environment">
+  </div>
+
+  <div id="loading-screen" class="screen">
+    <div class="spinner"></div>
+    <p>Wörter werden erkannt…</p>
+  </div>
+
+  <div id="reader-screen" class="screen">
+    <div id="image-container">
+      <img id="page-image" alt="Buchseite">
+      <div id="overlays"></div>
+    </div>
+    <div id="word-display"></div>
+    <div id="controls">
+      <button id="btn-back" title="Zurück">←</button>
+      <button id="btn-speak" title="Vorlesen">Vorlesen</button>
+      <button id="btn-next" title="Weiter">→</button>
+    </div>
+    <button id="btn-new">Neue Seite</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
