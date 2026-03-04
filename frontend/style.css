@@ -100,26 +100,27 @@ body {
 
 .word-overlay {
   position: absolute;
-  border-radius: 3px;
   cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s;
+  z-index: 2;
+  border-radius: 3px;
+  transition: background 0.15s;
 }
 
 .word-overlay.dimmed {
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(2px);
 }
 
-.word-overlay.active {
-  background: rgba(255, 220, 50, 0.45);
-  box-shadow: 0 0 0 3px rgba(255, 220, 50, 0.7);
-}
-
-#word-display {
-  font-size: 2rem;
-  font-weight: 700;
-  min-height: 2.5rem;
+#word-label {
+  display: none;
+  position: absolute;
+  color: #e94560;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 3;
   text-align: center;
-  color: #ffdc32;
+  text-shadow: 0 0 6px white, 0 0 12px white, 0 0 2px white;
 }
 
 #controls {

@@ -4,7 +4,7 @@ const loadingScreen = document.getElementById("loading-screen");
 const readerScreen = document.getElementById("reader-screen");
 const pageImage = document.getElementById("page-image");
 const overlaysDiv = document.getElementById("overlays");
-const wordDisplay = document.getElementById("word-display");
+const wordLabel = document.getElementById("word-label");
 const btnBack = document.getElementById("btn-back");
 const btnTts = document.getElementById("btn-tts");
 const btnNext = document.getElementById("btn-next");
@@ -41,10 +41,10 @@ cameraInput.addEventListener("change", async (e) => {
     pageImage.src = data.image_url;
 
     pageImage.onload = () => {
+      showScreen(readerScreen);
       buildOverlays();
       currentIndex = -1;
       advance(1);
-      showScreen(readerScreen);
     };
   } catch (err) {
     alert("Fehler bei der Texterkennung: " + err.message);
@@ -69,6 +69,7 @@ function buildOverlays() {
     el.addEventListener("click", () => goToWord(i));
     overlaysDiv.appendChild(el);
   });
+  wordLabel.style.display = "none";
 }
 
 function goToWord(index) {
@@ -78,10 +79,20 @@ function goToWord(index) {
   const overlayEls = overlaysDiv.children;
 
   for (let i = 0; i < overlayEls.length; i++) {
-    overlayEls[i].className = i === index ? "word-overlay active" : "word-overlay dimmed";
+    overlayEls[i].className = i === index ? "word-overlay" : "word-overlay dimmed";
   }
 
-  wordDisplay.textContent = words[index].text;
+  const el = overlayEls[index];
+  const fontSize = Math.max(16, el.offsetHeight * 1.1);
+  wordLabel.textContent = words[index].text;
+  wordLabel.style.display = "block";
+  wordLabel.style.fontSize = `${fontSize}px`;
+  wordLabel.style.left = `${el.offsetLeft}px`;
+  wordLabel.style.top = `${el.offsetTop}px`;
+  wordLabel.style.width = `${el.offsetWidth}px`;
+  wordLabel.style.height = `${el.offsetHeight}px`;
+  wordLabel.style.lineHeight = `${el.offsetHeight}px`;
+
   if (ttsEnabled) speak(words[index].text);
 }
 
@@ -111,7 +122,7 @@ btnNext.addEventListener("click", () => advance(1));
 btnBack.addEventListener("click", () => advance(-1));
 btnNew.addEventListener("click", () => {
   cameraInput.value = "";
-  wordDisplay.textContent = "";
+  wordLabel.style.display = "none";
   overlaysDiv.innerHTML = "";
   showScreen(startScreen);
 });
@@ -125,5 +136,8 @@ document.addEventListener("keydown", (e) => {
 
 // Rebuild overlays on resize
 window.addEventListener("resize", () => {
-  if (readerScreen.classList.contains("active")) buildOverlays();
+  if (readerScreen.classList.contains("active")) {
+    buildOverlays();
+    if (currentIndex >= 0) goToWord(currentIndex);
+  }
 });
