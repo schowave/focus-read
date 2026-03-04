@@ -24,7 +24,7 @@ async def languages_endpoint():
 
 
 @app.post("/api/ocr")
-async def ocr_endpoint(image: UploadFile = File(...), lang: str = Form("deu")):
+async def ocr_endpoint(image: UploadFile = File(...), lang: str = Form("de")):
     suffix = Path(image.filename).suffix or ".jpg"
     filename = f"{uuid.uuid4().hex}{suffix}"
     filepath = UPLOAD_DIR / filename

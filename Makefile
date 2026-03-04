@@ -16,7 +16,7 @@ test: venv
 	@venv/bin/python -c "\
 		import sys; sys.path.insert(0, 'backend'); \
 		from ocr import extract_words; \
-		words = extract_words('shopping.webp'); \
+		words = extract_words('examples/buchcover-waschbaer.webp'); \
 		print('\n'.join(f'{i+1:2d}. {w[\"text\"]}' for i, w in enumerate(words))); \
 		print(f'\n{len(words)} words detected')"
 

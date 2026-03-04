@@ -1,7 +1,5 @@
 fastapi==0.115.6
 uvicorn==0.34.0
 python-multipart==0.0.20
-pytesseract==0.3.13
-opencv-python-headless==4.10.0.84
+python-doctr[torch]==1.0.1
 Pillow==11.1.0
-pyspellchecker==0.8.1

@@ -31,7 +31,7 @@ let ttsLang = "de-DE";
   } catch {
     // Fallback: just show German
     const opt = document.createElement("option");
-    opt.value = "deu";
+    opt.value = "de";
     opt.textContent = "Deutsch";
     langSelect.appendChild(opt);
   }
