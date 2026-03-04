@@ -1,4 +1,5 @@
 const cameraInput = document.getElementById("camera-input");
+const langSelect = document.getElementById("lang-select");
 const startScreen = document.getElementById("start-screen");
 const loadingScreen = document.getElementById("loading-screen");
 const readerScreen = document.getElementById("reader-screen");
@@ -14,6 +15,27 @@ let words = [];
 let currentIndex = -1;
 let imageWidth = 0;
 let imageHeight = 0;
+let ttsLang = "de-DE";
+
+// Load available languages
+(async () => {
+  try {
+    const res = await fetch("/api/languages");
+    const langs = await res.json();
+    for (const [code, info] of Object.entries(langs)) {
+      const opt = document.createElement("option");
+      opt.value = code;
+      opt.textContent = info.label;
+      langSelect.appendChild(opt);
+    }
+  } catch {
+    // Fallback: just show German
+    const opt = document.createElement("option");
+    opt.value = "deu";
+    opt.textContent = "Deutsch";
+    langSelect.appendChild(opt);
+  }
+})();
 
 function showScreen(screen) {
   document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
@@ -29,6 +51,7 @@ cameraInput.addEventListener("change", async (e) => {
 
   const form = new FormData();
   form.append("image", file);
+  form.append("lang", langSelect.value);
 
   try {
     const res = await fetch("/api/ocr", { method: "POST", body: form });
@@ -37,6 +60,7 @@ cameraInput.addEventListener("change", async (e) => {
     words = data.words;
     imageWidth = data.image_width;
     imageHeight = data.image_height;
+    ttsLang = data.tts_lang;
     pageImage.src = data.image_url;
 
     pageImage.onload = () => {
@@ -46,7 +70,7 @@ cameraInput.addEventListener("change", async (e) => {
       showScreen(readerScreen);
     };
   } catch (err) {
-    alert("Fehler bei der Texterkennung: " + err.message);
+    alert("Error: " + err.message);
     showScreen(startScreen);
   }
 });
@@ -92,7 +116,7 @@ function advance(dir) {
 function speak(text) {
   speechSynthesis.cancel();
   const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "de-DE";
+  utter.lang = ttsLang;
   utter.rate = 0.8;
   speechSynthesis.speak(utter);
 }
