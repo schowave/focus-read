@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../features/library/library_screen.dart';
 import '../features/book/book_screen.dart';
 import '../features/capture/capture_screen.dart';
+import '../features/reader/reader_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -30,9 +31,7 @@ final router = GoRouter(
           builder: (context, state) {
             final bookId = state.pathParameters['bookId']!;
             final pageId = state.pathParameters['pageId']!;
-            // Placeholder until ReaderScreen is implemented (Task 12)
-            return _PlaceholderScreen(
-                title: 'Reader (book: $bookId, page: $pageId)');
+            return ReaderScreen(bookId: bookId, pageId: pageId);
           },
         ),
       ],
