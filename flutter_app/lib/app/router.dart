@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../features/library/library_screen.dart';
 import '../features/book/book_screen.dart';
 import '../features/capture/capture_screen.dart';
 import '../features/reader/reader_screen.dart';
+import '../features/settings/settings_screen.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -38,22 +38,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/settings',
-      builder: (context, state) =>
-          const _PlaceholderScreen(title: 'Settings'),
+      builder: (context, state) => const SettingsScreen(),
     ),
   ],
 );
-
-/// Temporary placeholder screen until feature screens are implemented.
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  const _PlaceholderScreen({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(child: Text('$title — coming soon')),
-    );
-  }
-}
