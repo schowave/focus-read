@@ -1,0 +1,10 @@
+{
+  "@@locale": "de",
+  "appTitle": "Focus Read",
+  "library": "Bibliothek",
+  "settings": "Einstellungen",
+  "newBook": "Neues Buch",
+  "cancel": "Abbrechen",
+  "delete": "Löschen",
+  "confirm": "Bestätigen"
+}
