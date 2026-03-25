@@ -1,10 +1,15 @@
 import 'package:drift/drift.dart' show Value;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../../core/storage/database.dart';
 import '../../features/settings/settings_provider.dart';
+import '../../shared/adaptive/adaptive_scaffold.dart';
+import '../../shared/adaptive/adaptive_progress_indicator.dart';
+import '../../shared/adaptive/adaptive_action_sheet.dart';
+import '../../shared/adaptive/platform_utils.dart';
 import '../../shared/confirm_dialog.dart';
 import '../book/create_book_dialog.dart';
 import 'book_card.dart';
@@ -27,24 +32,22 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     final deleteBook = ref.read(deleteBookProvider);
     final db = ref.read(databaseProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Focus Read'),
-        actions: [
-          IconButton(
-            icon: Icon(_editMode ? Icons.done : Icons.edit),
-            tooltip: _editMode ? 'Done' : 'Edit',
-            onPressed: () => setState(() => _editMode = !_editMode),
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Settings',
-            onPressed: () => context.push('/settings'),
-          ),
-        ],
-      ),
+    return AdaptiveScaffold(
+      title: 'Focus Read',
+      actions: [
+        IconButton(
+          icon: Icon(_editMode ? Icons.done : Icons.edit),
+          tooltip: _editMode ? 'Done' : 'Edit',
+          onPressed: () => setState(() => _editMode = !_editMode),
+        ),
+        IconButton(
+          icon: const Icon(Icons.settings),
+          tooltip: 'Settings',
+          onPressed: () => context.push('/settings'),
+        ),
+      ],
       body: booksAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: AdaptiveProgressIndicator()),
         error: (error, _) => Center(child: Text('Error: $error')),
         data: (books) {
           final itemCount = books.length + 1;
@@ -115,32 +118,21 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     Future<void> Function(String) deleteBook,
     AppDatabase db,
   ) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: const Text('Rename'),
-              onTap: () async {
-                Navigator.of(sheetContext).pop();
-                await _renameBook(context, book, db);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title:
-                  const Text('Delete', style: TextStyle(color: Colors.red)),
-              onTap: () async {
-                Navigator.of(sheetContext).pop();
-                await _deleteBook(context, book, deleteBook);
-              },
-            ),
-          ],
+    await showAdaptiveActionSheet(
+      context,
+      actions: [
+        AdaptiveAction(
+          label: 'Rename',
+          icon: Icons.edit,
+          onPressed: () => _renameBook(context, book, db),
         ),
-      ),
+        AdaptiveAction(
+          label: 'Delete',
+          icon: Icons.delete,
+          isDestructive: true,
+          onPressed: () => _deleteBook(context, book, deleteBook),
+        ),
+      ],
     );
   }
 
@@ -150,34 +142,67 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     AppDatabase db,
   ) async {
     final controller = TextEditingController(text: book.title);
-    final newTitle = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rename Book'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Title',
-            border: OutlineInputBorder(),
+    final String? newTitle;
+
+    if (isIOSPlatform) {
+      newTitle = await showCupertinoDialog<String>(
+        context: context,
+        builder: (context) => CupertinoAlertDialog(
+          title: const Text('Rename Book'),
+          content: Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: CupertinoTextField(
+              controller: controller,
+              placeholder: 'Title',
+              autofocus: true,
+            ),
           ),
-          autofocus: true,
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            CupertinoDialogAction(
+              onPressed: () {
+                final title = controller.text.trim();
+                if (title.isEmpty) return;
+                Navigator.of(context).pop(title);
+              },
+              child: const Text('Rename'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+      );
+    } else {
+      newTitle = await showDialog<String>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Rename Book'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: 'Title',
+              border: OutlineInputBorder(),
+            ),
+            autofocus: true,
           ),
-          FilledButton(
-            onPressed: () {
-              final title = controller.text.trim();
-              if (title.isEmpty) return;
-              Navigator.of(context).pop(title);
-            },
-            child: const Text('Rename'),
-          ),
-        ],
-      ),
-    );
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final title = controller.text.trim();
+                if (title.isEmpty) return;
+                Navigator.of(context).pop(title);
+              },
+              child: const Text('Rename'),
+            ),
+          ],
+        ),
+      );
+    }
 
     if (newTitle != null && newTitle.isNotEmpty) {
       await db.updateBook(
