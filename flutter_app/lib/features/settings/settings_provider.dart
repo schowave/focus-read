@@ -11,7 +11,7 @@ class AppSettings {
 
   const AppSettings({
     this.appLanguage = 'de',
-    this.ttsSpeed = 0.8,
+    this.ttsSpeed = 0.4,
     this.ttsEnabled = true,
     this.ageGroup = AgeGroup.earlyPrimary,
     this.confidenceThreshold = 0.85,
@@ -44,7 +44,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
     final prefs = await SharedPreferences.getInstance();
     state = AppSettings(
       appLanguage: prefs.getString('appLanguage') ?? 'de',
-      ttsSpeed: prefs.getDouble('ttsSpeed') ?? 0.8,
+      ttsSpeed: prefs.getDouble('ttsSpeed') ?? 0.4,
       ttsEnabled: prefs.getBool('ttsEnabled') ?? true,
       ageGroup: AgeGroup.values[prefs.getInt('ageGroup') ?? 1],
       confidenceThreshold: prefs.getDouble('confidenceThreshold') ?? 0.85,
