@@ -10,11 +10,18 @@ import '../book/create_book_dialog.dart';
 import 'book_card.dart';
 import 'library_provider.dart';
 
-class LibraryScreen extends ConsumerWidget {
+class LibraryScreen extends ConsumerStatefulWidget {
   const LibraryScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LibraryScreen> createState() => _LibraryScreenState();
+}
+
+class _LibraryScreenState extends ConsumerState<LibraryScreen> {
+  bool _editMode = false;
+
+  @override
+  Widget build(BuildContext context) {
     final booksAsync = ref.watch(booksProvider);
     final settings = ref.watch(settingsProvider);
     final deleteBook = ref.read(deleteBookProvider);
@@ -24,6 +31,11 @@ class LibraryScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Focus Read'),
         actions: [
+          IconButton(
+            icon: Icon(_editMode ? Icons.done : Icons.edit),
+            tooltip: _editMode ? 'Done' : 'Edit',
+            onPressed: () => setState(() => _editMode = !_editMode),
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             tooltip: 'Settings',
@@ -35,7 +47,6 @@ class LibraryScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text('Error: $error')),
         data: (books) {
-          // Total items = books + 1 "add" card
           final itemCount = books.length + 1;
 
           return GridView.builder(
@@ -48,39 +59,21 @@ class LibraryScreen extends ConsumerWidget {
             ),
             itemCount: itemCount,
             itemBuilder: (context, index) {
-              // Last item is the "add new book" card
               if (index == books.length) {
                 return _AddBookCard(
-                  onTap: () async {
-                    final result = await showCreateBookDialog(
-                      context,
-                      bookNumber: books.length + 1,
-                      defaultLanguage: settings.appLanguage,
-                    );
-                    if (result == null) return;
-
-                    final id = const Uuid().v4();
-                    await db.insertBook(
-                      BooksCompanion(
-                        id: Value(id),
-                        title: Value(result.title),
-                        language: Value(result.language),
-                      ),
-                    );
-
-                    if (context.mounted) {
-                      context.push('/book/$id');
-                    }
-                  },
+                  onTap: () => _createBook(context, books.length, settings, db),
                 );
               }
 
               final book = books[index];
               return BookCard(
                 book: book,
+                editMode: _editMode,
                 onTap: () => context.push('/book/${book.id}'),
                 onLongPress: () =>
-                    _showBookOptions(context, ref, book, deleteBook, db),
+                    _showBookOptions(context, book, deleteBook, db),
+                onRename: () => _renameBook(context, book, db),
+                onDelete: () => _deleteBook(context, book, deleteBook),
               );
             },
           );
@@ -89,9 +82,35 @@ class LibraryScreen extends ConsumerWidget {
     );
   }
 
+  Future<void> _createBook(
+    BuildContext context,
+    int bookCount,
+    AppSettings settings,
+    AppDatabase db,
+  ) async {
+    final result = await showCreateBookDialog(
+      context,
+      bookNumber: bookCount + 1,
+      defaultLanguage: settings.appLanguage,
+    );
+    if (result == null) return;
+
+    final id = const Uuid().v4();
+    await db.insertBook(
+      BooksCompanion(
+        id: Value(id),
+        title: Value(result.title),
+        language: Value(result.language),
+      ),
+    );
+
+    if (context.mounted) {
+      context.push('/book/$id');
+    }
+  }
+
   Future<void> _showBookOptions(
     BuildContext context,
-    WidgetRef ref,
     Book book,
     Future<void> Function(String) deleteBook,
     AppDatabase db,

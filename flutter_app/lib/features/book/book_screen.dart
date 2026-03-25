@@ -6,15 +6,22 @@ import '../../shared/confirm_dialog.dart';
 import 'book_provider.dart';
 import 'page_card.dart';
 
-class BookScreen extends ConsumerWidget {
+class BookScreen extends ConsumerStatefulWidget {
   final String bookId;
 
   const BookScreen({super.key, required this.bookId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final bookAsync = ref.watch(bookProvider(bookId));
-    final pagesAsync = ref.watch(pagesProvider(bookId));
+  ConsumerState<BookScreen> createState() => _BookScreenState();
+}
+
+class _BookScreenState extends ConsumerState<BookScreen> {
+  bool _editMode = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final bookAsync = ref.watch(bookProvider(widget.bookId));
+    final pagesAsync = ref.watch(pagesProvider(widget.bookId));
     final deletePage = ref.read(deletePageProvider);
 
     return Scaffold(
@@ -30,9 +37,14 @@ class BookScreen extends ConsumerWidget {
         ),
         actions: [
           IconButton(
+            icon: Icon(_editMode ? Icons.done : Icons.edit),
+            tooltip: _editMode ? 'Done' : 'Edit',
+            onPressed: () => setState(() => _editMode = !_editMode),
+          ),
+          IconButton(
             icon: const Icon(Icons.camera_alt),
             tooltip: 'Add page',
-            onPressed: () => context.push('/book/$bookId/capture'),
+            onPressed: () => context.push('/book/${widget.bookId}/capture'),
           ),
         ],
       ),
@@ -42,7 +54,8 @@ class BookScreen extends ConsumerWidget {
         data: (pages) {
           if (pages.isEmpty) {
             return _EmptyState(
-              onAddPage: () => context.push('/book/$bookId/capture'),
+              onAddPage: () =>
+                  context.push('/book/${widget.bookId}/capture'),
             );
           }
 
@@ -59,12 +72,12 @@ class BookScreen extends ConsumerWidget {
               final page = pages[index];
               return PageCard(
                 page: page,
-                onTap: () => context.push('/book/$bookId/read/${page.id}'),
-                onLongPress: () => _showPageOptions(
-                  context,
-                  page,
-                  deletePage,
-                ),
+                editMode: _editMode,
+                onTap: () => context
+                    .push('/book/${widget.bookId}/read/${page.id}'),
+                onLongPress: () =>
+                    _showPageOptions(context, page, deletePage),
+                onDelete: () => _deletePage(context, page, deletePage),
               );
             },
           );
