@@ -21,9 +21,12 @@ class CaptureStatus {
   });
 }
 
-class CaptureNotifier extends FamilyNotifier<CaptureStatus, String> {
+class CaptureNotifier extends Notifier<CaptureStatus> {
+  CaptureNotifier(this.bookId);
+  final String bookId;
+
   @override
-  CaptureStatus build(String bookId) => const CaptureStatus();
+  CaptureStatus build() => const CaptureStatus();
 
   Future<void> processImage(File imageFile) async {
     state = const CaptureStatus(state: CaptureState.processing);
@@ -41,7 +44,7 @@ class CaptureNotifier extends FamilyNotifier<CaptureStatus, String> {
         confidenceThreshold: settings.confidenceThreshold,
       );
 
-      final existingPages = await db.getPagesForBook(arg);
+      final existingPages = await db.getPagesForBook(bookId);
       final nextPageNumber = existingPages.isEmpty
           ? 1
           : existingPages
@@ -52,7 +55,7 @@ class CaptureNotifier extends FamilyNotifier<CaptureStatus, String> {
       final pageId = const Uuid().v4();
       await db.insertPage(PagesCompanion.insert(
         id: pageId,
-        bookId: arg,
+        bookId: bookId,
         pageNumber: nextPageNumber,
         imagePath: savedPath,
         imageWidth: ocrResult.imageWidth,
@@ -79,7 +82,7 @@ class CaptureNotifier extends FamilyNotifier<CaptureStatus, String> {
 
       if (nextPageNumber == 1) {
         await db.updateBook(BooksCompanion(
-          id: Value(arg),
+          id: Value(bookId),
           coverImagePath: Value(savedPath),
           updatedAt: Value(DateTime.now()),
         ));

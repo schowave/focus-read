@@ -56,10 +56,13 @@ class ReaderState {
   }
 }
 
-class ReaderNotifier extends FamilyNotifier<ReaderState, String> {
+class ReaderNotifier extends Notifier<ReaderState> {
+  ReaderNotifier(this.pageId);
+  final String pageId;
+
   @override
-  ReaderState build(String arg) {
-    _load(arg);
+  ReaderState build() {
+    _load(pageId);
     return ReaderState(
       words: const [],
       currentIndex: 0,
