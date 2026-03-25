@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../app/theme.dart';
 
 class ControlBar extends StatelessWidget {
@@ -71,7 +70,8 @@ class ControlBar extends StatelessWidget {
                 child: Center(
                   child: Text(
                     currentWord ?? '',
-                    style: GoogleFonts.quicksand(
+                    style: TextStyle(
+                      fontFamily: 'Quicksand',
                       fontSize: 20 * buttonScale,
                       fontWeight: FontWeight.w700,
                       color: AppColors.textDark,

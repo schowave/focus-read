@@ -3,7 +3,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../app/theme.dart';
 import 'capture_provider.dart';
@@ -255,7 +254,8 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
                     const SizedBox(height: 16),
                     Text(
                       'Recognizing text...',
-                      style: GoogleFonts.nunito(
+                      style: const TextStyle(
+                        fontFamily: 'Nunito',
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 // Color palette: "Leseecke" — warm, soft, inviting
 class AppColors {
@@ -31,79 +30,32 @@ final focusReadTheme = ThemeData(
     primaryContainer: AppColors.surface,
     onPrimaryContainer: AppColors.primary,
   ),
-  textTheme: GoogleFonts.nunitoTextTheme().copyWith(
-    displayLarge: GoogleFonts.quicksand(
-      fontSize: 40,
-      fontWeight: FontWeight.w700,
-      color: AppColors.textDark,
-    ),
-    displayMedium: GoogleFonts.quicksand(
-      fontSize: 32,
-      fontWeight: FontWeight.w700,
-      color: AppColors.textDark,
-    ),
-    headlineLarge: GoogleFonts.quicksand(
-      fontSize: 28,
-      fontWeight: FontWeight.w700,
-      color: AppColors.textDark,
-    ),
-    headlineMedium: GoogleFonts.quicksand(
-      fontSize: 24,
-      fontWeight: FontWeight.w600,
-      color: AppColors.textDark,
-    ),
-    headlineSmall: GoogleFonts.quicksand(
-      fontSize: 20,
-      fontWeight: FontWeight.w600,
-      color: AppColors.textDark,
-    ),
-    titleLarge: GoogleFonts.quicksand(
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-      color: AppColors.textDark,
-    ),
-    titleMedium: GoogleFonts.nunito(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-      color: AppColors.textDark,
-    ),
-    titleSmall: GoogleFonts.nunito(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-      color: AppColors.textDark,
-    ),
-    bodyLarge: GoogleFonts.nunito(
-      fontSize: 16,
-      fontWeight: FontWeight.w400,
-      color: AppColors.textDark,
-    ),
-    bodyMedium: GoogleFonts.nunito(
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
-      color: AppColors.textDark,
-    ),
-    bodySmall: GoogleFonts.nunito(
-      fontSize: 12,
-      fontWeight: FontWeight.w400,
-      color: AppColors.textLight,
-    ),
-    labelLarge: GoogleFonts.nunito(
-      fontSize: 14,
-      fontWeight: FontWeight.w600,
-      color: AppColors.textDark,
-    ),
+  textTheme: ThemeData.light().textTheme.apply(fontFamily: 'Nunito').copyWith(
+    displayLarge: const TextStyle(fontFamily: 'Quicksand', fontSize: 40, fontWeight: FontWeight.w700, color: AppColors.textDark),
+    displayMedium: const TextStyle(fontFamily: 'Quicksand', fontSize: 32, fontWeight: FontWeight.w700, color: AppColors.textDark),
+    headlineLarge: const TextStyle(fontFamily: 'Quicksand', fontSize: 28, fontWeight: FontWeight.w700, color: AppColors.textDark),
+    headlineMedium: const TextStyle(fontFamily: 'Quicksand', fontSize: 24, fontWeight: FontWeight.w600, color: AppColors.textDark),
+    headlineSmall: const TextStyle(fontFamily: 'Quicksand', fontSize: 20, fontWeight: FontWeight.w600, color: AppColors.textDark),
+    titleLarge: const TextStyle(fontFamily: 'Quicksand', fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textDark),
+    titleMedium: const TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.textDark),
+    titleSmall: const TextStyle(fontFamily: 'Nunito', fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark),
+    bodyLarge: const TextStyle(fontFamily: 'Nunito', fontSize: 16, fontWeight: FontWeight.w400, color: AppColors.textDark),
+    bodyMedium: const TextStyle(fontFamily: 'Nunito', fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.textDark),
+    bodySmall: const TextStyle(fontFamily: 'Nunito', fontSize: 12, fontWeight: FontWeight.w400, color: AppColors.textLight),
+    labelLarge: const TextStyle(fontFamily: 'Nunito', fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark),
   ),
-  appBarTheme: AppBarTheme(
+  appBarTheme: const AppBarTheme(
     centerTitle: true,
     elevation: 0,
     backgroundColor: AppColors.background,
     foregroundColor: AppColors.textDark,
-    titleTextStyle: GoogleFonts.quicksand(
+    titleTextStyle: TextStyle(
+      fontFamily: 'Quicksand',
       fontSize: 20,
       fontWeight: FontWeight.w600,
       color: AppColors.textDark,
     ),
-    iconTheme: const IconThemeData(color: AppColors.textDark),
+    iconTheme: IconThemeData(color: AppColors.textDark),
   ),
   cardTheme: CardThemeData(
     elevation: 0,
@@ -121,7 +73,8 @@ final focusReadTheme = ThemeData(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
-      textStyle: GoogleFonts.nunito(
+      textStyle: const TextStyle(
+        fontFamily: 'Nunito',
         fontSize: 16,
         fontWeight: FontWeight.w600,
       ),
@@ -130,7 +83,8 @@ final focusReadTheme = ThemeData(
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
       foregroundColor: AppColors.primary,
-      textStyle: GoogleFonts.nunito(
+      textStyle: const TextStyle(
+        fontFamily: 'Nunito',
         fontSize: 14,
         fontWeight: FontWeight.w600,
       ),
@@ -151,13 +105,14 @@ final focusReadTheme = ThemeData(
       return AppColors.divider;
     }),
   ),
-  sliderTheme: SliderThemeData(
+  sliderTheme: const SliderThemeData(
     activeTrackColor: AppColors.primary,
     inactiveTrackColor: AppColors.divider,
     thumbColor: AppColors.primary,
-    overlayColor: AppColors.primary.withValues(alpha: 0.1),
+    overlayColor: Color(0x1AD4845A),
     valueIndicatorColor: AppColors.primary,
-    valueIndicatorTextStyle: GoogleFonts.nunito(
+    valueIndicatorTextStyle: TextStyle(
+      fontFamily: 'Nunito',
       color: Colors.white,
       fontWeight: FontWeight.w600,
     ),
@@ -167,7 +122,8 @@ final focusReadTheme = ThemeData(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(24),
     ),
-    titleTextStyle: GoogleFonts.quicksand(
+    titleTextStyle: const TextStyle(
+      fontFamily: 'Quicksand',
       fontSize: 20,
       fontWeight: FontWeight.w600,
       color: AppColors.textDark,
@@ -194,7 +150,7 @@ final focusReadTheme = ThemeData(
       borderRadius: BorderRadius.circular(16),
       borderSide: const BorderSide(color: AppColors.primary, width: 2),
     ),
-    labelStyle: GoogleFonts.nunito(color: AppColors.textLight),
+    labelStyle: const TextStyle(fontFamily: 'Nunito', color: AppColors.textLight),
   ),
   dividerColor: AppColors.divider,
 );
