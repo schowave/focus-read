@@ -22,6 +22,15 @@ class BookCard extends ConsumerWidget {
     this.onDelete,
   });
 
+  Widget _placeholder(BuildContext context) => Container(
+        color: Theme.of(context).colorScheme.primaryContainer,
+        child: Icon(
+          Icons.menu_book,
+          size: 48,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+        ),
+      );
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pageCount = ref.watch(bookPageCountProvider(book.id));
@@ -37,10 +46,12 @@ class BookCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child: book.coverImagePath != null
+                  child: book.coverImagePath != null &&
+                          File(book.coverImagePath!).existsSync()
                       ? Image.file(
                           File(book.coverImagePath!),
                           fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => _placeholder(context),
                         )
                       : Container(
                           color: Theme.of(context).colorScheme.primaryContainer,
@@ -78,7 +89,7 @@ class BookCard extends ConsumerWidget {
                 ),
               ],
             ),
-            if (editMode)
+            if (editMode && (onRename != null || onDelete != null))
               Positioned(
                 top: 4,
                 right: 4,

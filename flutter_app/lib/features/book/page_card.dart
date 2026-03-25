@@ -35,8 +35,20 @@ class PageCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Expanded(
-                  child:
-                      Image.file(File(page.imagePath), fit: BoxFit.cover),
+                  child: File(page.imagePath).existsSync()
+                      ? Image.file(File(page.imagePath),
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primaryContainer,
+                            child: const Icon(Icons.broken_image, size: 32),
+                          ))
+                      : Container(
+                          color:
+                              Theme.of(context).colorScheme.primaryContainer,
+                          child: const Icon(Icons.broken_image, size: 32),
+                        ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(8),
