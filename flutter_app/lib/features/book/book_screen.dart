@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/storage/database.dart' as db;
+import '../../shared/adaptive/adaptive_scaffold.dart';
+import '../../shared/adaptive/adaptive_progress_indicator.dart';
+import '../../shared/adaptive/adaptive_action_sheet.dart';
 import '../../shared/confirm_dialog.dart';
 import 'book_provider.dart';
 import 'page_card.dart';
@@ -24,32 +27,30 @@ class _BookScreenState extends ConsumerState<BookScreen> {
     final pagesAsync = ref.watch(pagesProvider(widget.bookId));
     final deletePage = ref.read(deletePageProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/'),
-        ),
-        title: bookAsync.when(
-          data: (book) => Text(book.title),
-          loading: () => const Text(''),
-          error: (_, __) => const Text('Book'),
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(_editMode ? Icons.done : Icons.edit),
-            tooltip: _editMode ? 'Done' : 'Edit',
-            onPressed: () => setState(() => _editMode = !_editMode),
-          ),
-          IconButton(
-            icon: const Icon(Icons.camera_alt),
-            tooltip: 'Add page',
-            onPressed: () => context.push('/book/${widget.bookId}/capture'),
-          ),
-        ],
+    return AdaptiveScaffold(
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios),
+        onPressed: () => context.go('/'),
       ),
+      titleWidget: bookAsync.when(
+        data: (book) => Text(book.title),
+        loading: () => const Text(''),
+        error: (_, __) => const Text('Book'),
+      ),
+      actions: [
+        IconButton(
+          icon: Icon(_editMode ? Icons.done : Icons.edit),
+          tooltip: _editMode ? 'Done' : 'Edit',
+          onPressed: () => setState(() => _editMode = !_editMode),
+        ),
+        IconButton(
+          icon: const Icon(Icons.camera_alt),
+          tooltip: 'Add page',
+          onPressed: () => context.push('/book/${widget.bookId}/capture'),
+        ),
+      ],
       body: pagesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: AdaptiveProgressIndicator()),
         error: (error, _) => Center(child: Text('Error: $error')),
         data: (pages) {
           if (pages.isEmpty) {
@@ -91,26 +92,16 @@ class _BookScreenState extends ConsumerState<BookScreen> {
     db.Page page,
     Future<void> Function(String, String) deletePage,
   ) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text(
-                'Delete Page',
-                style: TextStyle(color: Colors.red),
-              ),
-              onTap: () async {
-                Navigator.of(sheetContext).pop();
-                await _deletePage(context, page, deletePage);
-              },
-            ),
-          ],
+    await showAdaptiveActionSheet(
+      context,
+      actions: [
+        AdaptiveAction(
+          label: 'Delete Page',
+          icon: Icons.delete,
+          isDestructive: true,
+          onPressed: () => _deletePage(context, page, deletePage),
         ),
-      ),
+      ],
     );
   }
 
