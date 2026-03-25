@@ -61,7 +61,7 @@ New directory `lib/shared/adaptive/` with wrapper widgets that render Cupertino 
 
 **Critical: Material Theme under CupertinoApp.** `CupertinoApp.router` does not provide a Material `Theme` ancestor. Since the app still uses Material widgets (Card, etc.) in custom components, `AdaptiveApp` must inject a Material `Theme` widget via the `builder:` parameter on iOS. This ensures `Theme.of(context)` calls continue to work.
 
-**Shared colors** stay in `theme.dart` as constants (`LeseeckeColors`), accessible to both themes. Cards, word overlays, and custom widgets use these colors directly.
+**Shared colors** stay in `theme.dart` as constants (`AppColors`), accessible to both themes. Cards, word overlays, and custom widgets use these colors directly.
 
 **Localization delegates:** Both platform paths include all four delegates (`GlobalMaterialLocalizations`, `GlobalWidgetsLocalizations`, `GlobalCupertinoLocalizations`, app-specific) since Material widgets are still used within the Cupertino shell.
 
