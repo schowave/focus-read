@@ -1,10 +1,14 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../app/theme.dart';
+import '../../shared/adaptive/adaptive_dialog.dart';
+import '../../shared/adaptive/adaptive_progress_indicator.dart';
+import '../../shared/adaptive/platform_utils.dart';
 import 'capture_provider.dart';
 
 class CaptureScreen extends ConsumerStatefulWidget {
@@ -75,21 +79,11 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
   Future<void> _showPermissionDeniedDialog() async {
     if (!mounted) return;
-    await showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Camera Access Needed'),
-        content: const Text(
-          'Focus Read needs camera access to photograph book pages. '
+    await showAdaptiveAlert(
+      context,
+      title: 'Camera Access Needed',
+      message: 'Focus Read needs camera access to photograph book pages. '
           'Please enable camera access in your device settings.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -151,24 +145,48 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
   Future<void> _handleSuccess(String pageId) async {
     if (!mounted) return;
-    final result = await showDialog<String>(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Page saved!'),
-        content: const Text('What would you like to do next?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop('another'),
-            child: const Text('Add another page'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop('read'),
-            child: const Text('Start reading'),
-          ),
-        ],
-      ),
-    );
+    String? result;
+
+    if (isIOSPlatform) {
+      result = await showCupertinoDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => CupertinoAlertDialog(
+          title: const Text('Page saved!'),
+          content: const Text('What would you like to do next?'),
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () => Navigator.of(ctx).pop('another'),
+              child: const Text('Add another page'),
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () => Navigator.of(ctx).pop('read'),
+              child: const Text('Start reading'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      result = await showDialog<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Page saved!'),
+          content: const Text('What would you like to do next?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop('another'),
+              child: const Text('Add another page'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop('read'),
+              child: const Text('Start reading'),
+            ),
+          ],
+        ),
+      );
+    }
 
     if (!mounted) return;
     ref.read(captureProvider(widget.bookId).notifier).reset();
@@ -176,7 +194,6 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
     if (result == 'read') {
       context.go('/book/${widget.bookId}/read/$pageId');
     }
-    // 'another' → just reset and stay on capture screen
   }
 
   @override
@@ -235,7 +252,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
             _PermissionDeniedView(onRetry: _initCamera)
           else if (!_isInitialized)
             const Center(
-              child: CircularProgressIndicator(color: Colors.white),
+              child: AdaptiveProgressIndicator(color: Colors.white),
             )
           else
             Positioned.fill(
@@ -250,7 +267,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const CircularProgressIndicator(color: Colors.white),
+                    const AdaptiveProgressIndicator(color: Colors.white),
                     const SizedBox(height: 16),
                     Text(
                       'Recognizing text...',
