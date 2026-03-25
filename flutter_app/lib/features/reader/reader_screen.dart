@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/storage/database.dart' as db;
 import '../../core/tts/tts_service.dart';
 import '../../shared/models.dart';
+import '../../shared/adaptive/adaptive_scaffold.dart';
+import '../../shared/adaptive/adaptive_progress_indicator.dart';
 import '../settings/settings_provider.dart';
 import 'reader_provider.dart';
 import 'word_overlay.dart';
@@ -110,10 +112,8 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
           ref.read(readerProvider(widget.pageId).notifier).advance(-1);
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Page ${readerState.currentPage}/${readerState.totalPages}'),
-        ),
+      child: AdaptiveScaffold(
+        title: 'Page ${readerState.currentPage}/${readerState.totalPages}',
         body: Column(
           children: [
             Expanded(
@@ -149,13 +149,13 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   Widget _buildMainArea(
       ReaderState readerState, AppSettings settings, AgeGroup ageGroup) {
     if (_pageInfo == null) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: AdaptiveProgressIndicator());
     }
 
     if (readerState.isEmpty && readerState.words.isEmpty &&
         readerState.currentPage == 1 && readerState.totalPages == 1) {
       // Still loading — show spinner
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: AdaptiveProgressIndicator());
     }
 
     if (readerState.isEmpty) {
