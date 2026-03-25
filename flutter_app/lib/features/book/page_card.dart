@@ -33,11 +33,13 @@ class PageCard extends ConsumerWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Page ${page.pageNumber}',
-                      style: Theme.of(context).textTheme.titleSmall),
+                      style: Theme.of(context).textTheme.titleSmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
                   wordCount.when(
                     data: (count) => Text('$count words',
                         style: Theme.of(context).textTheme.bodySmall),
