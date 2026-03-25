@@ -3,7 +3,9 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../app/theme.dart';
 import 'capture_provider.dart';
 
 class CaptureScreen extends ConsumerStatefulWidget {
@@ -245,15 +247,19 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
           if (isProcessing)
             Container(
               color: Colors.black54,
-              child: const Center(
+              child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CircularProgressIndicator(color: Colors.white),
-                    SizedBox(height: 16),
+                    const CircularProgressIndicator(color: Colors.white),
+                    const SizedBox(height: 16),
                     Text(
                       'Recognizing text...',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: GoogleFonts.nunito(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -277,14 +283,14 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
                       shape: BoxShape.circle,
                       color: Colors.white,
                       border: Border.all(
-                        color: Colors.white54,
+                        color: AppColors.primary,
                         width: 4,
                       ),
                     ),
                     child: const Icon(
                       Icons.camera,
                       size: 36,
-                      color: Colors.black87,
+                      color: AppColors.primary,
                     ),
                   ),
                 ),

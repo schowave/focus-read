@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../app/theme.dart';
 
 class ControlBar extends StatelessWidget {
   final String? currentWord;
@@ -32,13 +34,13 @@ class ControlBar extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: AppColors.cardShadow,
             blurRadius: 8,
-            offset: const Offset(0, -2),
+            offset: Offset(0, -2),
           ),
         ],
       ),
@@ -69,9 +71,10 @@ class ControlBar extends StatelessWidget {
                 child: Center(
                   child: Text(
                     currentWord ?? '',
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    style: GoogleFonts.quicksand(
                       fontSize: 20 * buttonScale,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textDark,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

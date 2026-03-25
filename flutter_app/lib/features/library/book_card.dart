@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../app/theme.dart';
 import '../../core/storage/database.dart';
 import 'library_provider.dart';
 
@@ -38,7 +39,18 @@ class BookCard extends ConsumerWidget {
     return GestureDetector(
       onTap: editMode ? null : onTap,
       onLongPress: onLongPress,
-      child: Card(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+              color: AppColors.cardShadow,
+              blurRadius: 12,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Card(
         clipBehavior: Clip.antiAlias,
         child: Stack(
           children: [
@@ -103,7 +115,7 @@ class BookCard extends ConsumerWidget {
                     const SizedBox(height: 4),
                     _EditButton(
                       icon: Icons.delete,
-                      color: Colors.red,
+                      color: AppColors.error,
                       onTap: onDelete,
                     ),
                   ],
@@ -111,6 +123,7 @@ class BookCard extends ConsumerWidget {
               ),
           ],
         ),
+      ),
       ),
     );
   }

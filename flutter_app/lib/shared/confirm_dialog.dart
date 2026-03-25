@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../app/theme.dart';
 
 Future<bool> showConfirmDialog(
   BuildContext context, {
@@ -19,9 +20,9 @@ Future<bool> showConfirmDialog(
         ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
-          style: confirmColor != null
-              ? FilledButton.styleFrom(backgroundColor: confirmColor)
-              : null,
+          style: FilledButton.styleFrom(
+            backgroundColor: confirmColor ?? AppColors.error,
+          ),
           child: Text(confirmLabel),
         ),
       ],

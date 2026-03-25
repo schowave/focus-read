@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../app/theme.dart';
 
 class WordOverlay extends StatelessWidget {
   final Rect rect;
@@ -29,9 +30,10 @@ class WordOverlay extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           decoration: BoxDecoration(
             color: _overlayColor,
+            borderRadius: BorderRadius.circular(6),
             border: isActive
                 ? Border.all(
-                    color: const Color(0xFFE8A87C),
+                    color: AppColors.activeWord,
                     width: 2,
                   )
                 : null,
@@ -43,7 +45,7 @@ class WordOverlay extends StatelessWidget {
 
   Color get _overlayColor {
     if (isActive) {
-      return const Color(0xFFE8A87C).withValues(alpha: 0.4);
+      return AppColors.activeWord.withValues(alpha: 0.4);
     }
     if (isRead) {
       return Colors.white.withValues(alpha: dimOpacity * 0.5);
