@@ -231,6 +231,12 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
+        titleTextStyle: const TextStyle(
+          fontFamily: 'Quicksand',
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
         title: const Text('Capture Page'),
         actions: [
           IconButton(
