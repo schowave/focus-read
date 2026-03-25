@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../app/theme.dart';
 import '../../shared/adaptive/adaptive_dialog.dart';
 import '../../shared/adaptive/adaptive_progress_indicator.dart';
+import '../../shared/adaptive/adaptive_scaffold.dart';
 import '../../shared/adaptive/platform_utils.dart';
 import 'capture_provider.dart';
 
@@ -226,33 +227,24 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
 
     final isProcessing = captureStatus.state == CaptureState.processing;
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.white),
-        titleTextStyle: const TextStyle(
-          fontFamily: 'Quicksand',
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: Colors.white,
+    return AdaptiveScaffold(
+      title: 'Capture Page',
+      actions: [
+        IconButton(
+          icon: Icon(_flashIcon),
+          onPressed: _isInitialized && !isProcessing ? _toggleFlash : null,
+          tooltip: 'Toggle flash',
         ),
-        title: const Text('Capture Page'),
-        actions: [
-          IconButton(
-            icon: Icon(_flashIcon, color: Colors.white),
-            onPressed: _isInitialized && !isProcessing ? _toggleFlash : null,
-            tooltip: 'Toggle flash',
-          ),
-          IconButton(
-            icon: const Icon(Icons.photo_library, color: Colors.white),
-            onPressed: !isProcessing ? _pickFromGallery : null,
-            tooltip: 'Choose from gallery',
-          ),
-        ],
-      ),
-      body: Stack(
+        IconButton(
+          icon: const Icon(Icons.photo_library),
+          onPressed: !isProcessing ? _pickFromGallery : null,
+          tooltip: 'Choose from gallery',
+        ),
+      ],
+      body: Scaffold(
+        // Inner Scaffold provides ScaffoldMessenger for snackbars
+        backgroundColor: Colors.black,
+        body: Stack(
         children: [
           // Camera preview or fallback
           if (_permissionDenied)
@@ -321,6 +313,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
               ),
             ),
         ],
+      ),
       ),
     );
   }
