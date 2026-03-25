@@ -10,6 +10,16 @@ import 'reader_provider.dart';
 import 'word_overlay.dart';
 import 'control_bar.dart';
 
+const _languageLocaleMap = {
+  'de': 'de-DE',
+  'en': 'en-US',
+  'fr': 'fr-FR',
+  'es': 'es-ES',
+  'pt': 'pt-PT',
+  'it': 'it-IT',
+  'nl': 'nl-NL',
+};
+
 class ReaderScreen extends ConsumerStatefulWidget {
   final String bookId;
   final String pageId;
@@ -26,15 +36,13 @@ class ReaderScreen extends ConsumerStatefulWidget {
 
 class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   db.Page? _pageInfo;
-  Size? _imageDisplaySize;
-  final GlobalKey _imageKey = GlobalKey();
+  String _bookLanguage = 'de';
+  bool _imageLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _loadPageInfo();
-    // Measure image size after first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) => _measureImage());
   }
 
   Future<void> _loadPageInfo() async {
@@ -43,23 +51,15 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
       final page = await (database.select(database.pages)
             ..where((p) => p.id.equals(widget.pageId)))
           .getSingle();
+      // Fetch book language for TTS
+      final book = await database.getBook(page.bookId);
       if (mounted) {
-        setState(() => _pageInfo = page);
-        // Measure again once page info loaded
-        WidgetsBinding.instance.addPostFrameCallback((_) => _measureImage());
+        setState(() {
+          _pageInfo = page;
+          _bookLanguage = book.language;
+        });
       }
     } catch (_) {}
-  }
-
-  void _measureImage() {
-    final ctx = _imageKey.currentContext;
-    if (ctx == null) return;
-    final box = ctx.findRenderObject() as RenderBox?;
-    if (box == null) return;
-    final size = box.size;
-    if (size != _imageDisplaySize) {
-      setState(() => _imageDisplaySize = size);
-    }
   }
 
   Rect _wordRect(Map<String, dynamic> word, Size displaySize, db.Page page) {
@@ -78,9 +78,10 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     final word = readerState.currentWord;
     if (word == null || word.isEmpty) return;
     final tts = ref.read(ttsServiceProvider);
+    final locale = _languageLocaleMap[_bookLanguage] ?? 'de-DE';
     tts.speak(
       word,
-      language: '${settings.appLanguage}-${settings.appLanguage.toUpperCase()}',
+      language: locale,
       rate: settings.ttsSpeed,
     );
   }
@@ -191,22 +192,22 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                 Positioned.fill(
                   child: Image.file(
                     File(page.imagePath),
-                    key: _imageKey,
                     fit: BoxFit.contain,
                     frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                      if (frame != null) {
+                      if (frame != null && !_imageLoaded) {
                         WidgetsBinding.instance.addPostFrameCallback(
-                            (_) => _measureImage());
+                            (_) {
+                          if (mounted) setState(() => _imageLoaded = true);
+                        });
                       }
                       return child;
                     },
                   ),
                 ),
-                // Word overlays — only if we have display size
-                if (_imageDisplaySize != null)
+                // Word overlays — only after image has loaded
+                if (_imageLoaded)
                   ..._buildOverlays(
-                      readerState, ageGroup, page, _imageDisplaySize!,
-                      constraints),
+                      readerState, ageGroup, page, constraints),
               ],
             ),
           ),
@@ -219,7 +220,6 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
     ReaderState readerState,
     AgeGroup ageGroup,
     db.Page page,
-    Size imageKeySize,
     BoxConstraints constraints,
   ) {
     // Calculate actual image display rect within the container (BoxFit.contain)

@@ -21,8 +21,7 @@ class OcrService {
   TextRecognizer? _recognizer;
 
   TextRecognizer _getRecognizer() {
-    _recognizer?.close();
-    _recognizer = TextRecognizer(script: TextRecognitionScript.latin);
+    _recognizer ??= TextRecognizer(script: TextRecognitionScript.latin);
     return _recognizer!;
   }
 
