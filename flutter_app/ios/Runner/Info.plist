@@ -28,6 +28,8 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Focus Read needs camera access to photograph book pages for text recognition.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Focus Read may check for enhanced text-to-speech voices on your network. You can safely deny this — reading aloud works without it.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Focus Read needs photo library access to import book page images.</string>
 	<key>UIApplicationSceneManifest</key>
