@@ -190,19 +190,29 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
               children: [
                 // The page image
                 Positioned.fill(
-                  child: Image.file(
-                    File(page.imagePath),
-                    fit: BoxFit.contain,
-                    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                      if (frame != null && !_imageLoaded) {
-                        WidgetsBinding.instance.addPostFrameCallback(
-                            (_) {
-                          if (mounted) setState(() => _imageLoaded = true);
-                        });
-                      }
-                      return child;
-                    },
-                  ),
+                  child: File(page.imagePath).existsSync()
+                      ? Image.file(
+                          File(page.imagePath),
+                          fit: BoxFit.contain,
+                          frameBuilder:
+                              (context, child, frame, wasSynchronouslyLoaded) {
+                            if (frame != null && !_imageLoaded) {
+                              WidgetsBinding.instance.addPostFrameCallback(
+                                  (_) {
+                                if (mounted) {
+                                  setState(() => _imageLoaded = true);
+                                }
+                              });
+                            }
+                            return child;
+                          },
+                          errorBuilder: (_, __, ___) => const Center(
+                            child: Icon(Icons.broken_image, size: 64),
+                          ),
+                        )
+                      : const Center(
+                          child: Icon(Icons.broken_image, size: 64),
+                        ),
                 ),
                 // Word overlays — only after image has loaded
                 if (_imageLoaded)
