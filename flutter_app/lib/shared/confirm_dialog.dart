@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app/theme.dart';
+import 'adaptive/adaptive_dialog.dart';
 
 Future<bool> showConfirmDialog(
   BuildContext context, {
@@ -7,26 +8,14 @@ Future<bool> showConfirmDialog(
   required String message,
   String confirmLabel = 'Delete',
   Color? confirmColor,
-}) async {
-  final result = await showDialog<bool>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title),
-      content: Text(message),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(
-            backgroundColor: confirmColor ?? AppColors.error,
-          ),
-          child: Text(confirmLabel),
-        ),
-      ],
-    ),
+}) {
+  final effectiveColor = confirmColor ?? AppColors.error;
+  return showAdaptiveConfirmDialog(
+    context,
+    title: title,
+    message: message,
+    confirmLabel: confirmLabel,
+    confirmColor: effectiveColor,
+    isDestructive: true,
   );
-  return result ?? false;
 }
