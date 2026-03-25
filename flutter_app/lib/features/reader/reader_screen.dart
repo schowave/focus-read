@@ -117,7 +117,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         body: Column(
           children: [
             Expanded(
-              child: _buildMainArea(readerState, settings, ageGroup),
+              child: _buildMainArea(readerState, settings),
             ),
             ControlBar(
               currentWord: readerState.currentWord,
@@ -147,7 +147,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
   }
 
   Widget _buildMainArea(
-      ReaderState readerState, AppSettings settings, AgeGroup ageGroup) {
+      ReaderState readerState, AppSettings settings) {
     if (_pageInfo == null) {
       return const Center(child: AdaptiveProgressIndicator());
     }
@@ -217,7 +217,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
                 // Word overlays — only after image has loaded
                 if (_imageLoaded)
                   ..._buildOverlays(
-                      readerState, ageGroup, page, constraints),
+                      readerState, settings, page, constraints),
               ],
             ),
           ),
@@ -228,7 +228,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
 
   List<Widget> _buildOverlays(
     ReaderState readerState,
-    AgeGroup ageGroup,
+    AppSettings settings,
     db.Page page,
     BoxConstraints constraints,
   ) {
@@ -268,7 +268,7 @@ class _ReaderScreenState extends ConsumerState<ReaderScreen> {
         rect: shiftedRect,
         isActive: isActive,
         isRead: isRead,
-        dimOpacity: ageGroup.dimOpacity,
+        focusIntensity: settings.focusIntensity,
         onTap: () {
           ref.read(readerProvider(widget.pageId).notifier).jumpTo(index);
         },

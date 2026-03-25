@@ -5,7 +5,7 @@ class WordOverlay extends StatelessWidget {
   final Rect rect;
   final bool isActive;
   final bool isRead;
-  final double dimOpacity;
+  final double focusIntensity;
   final VoidCallback onTap;
 
   const WordOverlay({
@@ -13,7 +13,7 @@ class WordOverlay extends StatelessWidget {
     required this.rect,
     required this.isActive,
     required this.isRead,
-    required this.dimOpacity,
+    required this.focusIntensity,
     required this.onTap,
   });
 
@@ -45,11 +45,11 @@ class WordOverlay extends StatelessWidget {
 
   Color get _overlayColor {
     if (isActive) {
-      return AppColors.activeWord.withValues(alpha: 0.4);
+      return AppColors.activeWord.withValues(alpha: 0.3 + focusIntensity * 0.5);
     }
     if (isRead) {
-      return Colors.white.withValues(alpha: dimOpacity * 0.5);
+      return Colors.white.withValues(alpha: focusIntensity * 0.85);
     }
-    return Colors.white.withValues(alpha: dimOpacity);
+    return Colors.white.withValues(alpha: focusIntensity * 0.7);
   }
 }

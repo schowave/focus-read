@@ -11,16 +11,10 @@ extension AgeGroupConfig on AgeGroup {
     AgeGroup.latePrimary => 1.0,
   };
 
-  double get highlightOpacity => switch (this) {
+  double get defaultFocusIntensity => switch (this) {
     AgeGroup.preschool => 0.85,
     AgeGroup.earlyPrimary => 0.6,
     AgeGroup.latePrimary => 0.35,
-  };
-
-  double get dimOpacity => switch (this) {
-    AgeGroup.preschool => 0.8,
-    AgeGroup.earlyPrimary => 0.5,
-    AgeGroup.latePrimary => 0.25,
   };
 
   bool get autoTtsDefault => switch (this) {

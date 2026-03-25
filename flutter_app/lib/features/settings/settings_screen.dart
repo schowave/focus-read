@@ -76,6 +76,25 @@ class SettingsScreen extends ConsumerWidget {
           ],
         ),
         CupertinoListSection.insetGrouped(
+          header: const Text('Reading'),
+          children: [
+            CupertinoListTile(
+              title: const Text('Focus Intensity'),
+              subtitle: Text('${(settings.focusIntensity * 100).round()}%'),
+              additionalInfo: SizedBox(
+                width: 180,
+                child: AdaptiveSlider(
+                  value: settings.focusIntensity,
+                  min: 0.0,
+                  max: 1.0,
+                  divisions: 20,
+                  onChanged: (value) => notifier.setFocusIntensity(value),
+                ),
+              ),
+            ),
+          ],
+        ),
+        CupertinoListSection.insetGrouped(
           header: const Text('Advanced'),
           children: [
             CupertinoListTile(
@@ -136,6 +155,25 @@ class SettingsScreen extends ConsumerWidget {
                 onChanged: settings.ttsEnabled
                     ? (value) => notifier.setTtsSpeed(value)
                     : null,
+              ),
+            ],
+          ),
+        ),
+        const Divider(),
+        _SectionHeader(title: 'Reading'),
+        ListTile(
+          title: const Text('Focus Intensity'),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${(settings.focusIntensity * 100).round()}%'),
+              Slider(
+                value: settings.focusIntensity,
+                min: 0.0,
+                max: 1.0,
+                divisions: 20,
+                label: '${(settings.focusIntensity * 100).round()}%',
+                onChanged: (value) => notifier.setFocusIntensity(value),
               ),
             ],
           ),

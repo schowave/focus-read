@@ -8,6 +8,7 @@ class AppSettings {
   final bool ttsEnabled;
   final AgeGroup ageGroup;
   final double confidenceThreshold;
+  final double focusIntensity;
 
   const AppSettings({
     this.appLanguage = 'de',
@@ -15,6 +16,7 @@ class AppSettings {
     this.ttsEnabled = true,
     this.ageGroup = AgeGroup.earlyPrimary,
     this.confidenceThreshold = 0.85,
+    this.focusIntensity = 0.6,
   });
 
   AppSettings copyWith({
@@ -23,6 +25,7 @@ class AppSettings {
     bool? ttsEnabled,
     AgeGroup? ageGroup,
     double? confidenceThreshold,
+    double? focusIntensity,
   }) =>
       AppSettings(
         appLanguage: appLanguage ?? this.appLanguage,
@@ -30,6 +33,7 @@ class AppSettings {
         ttsEnabled: ttsEnabled ?? this.ttsEnabled,
         ageGroup: ageGroup ?? this.ageGroup,
         confidenceThreshold: confidenceThreshold ?? this.confidenceThreshold,
+        focusIntensity: focusIntensity ?? this.focusIntensity,
       );
 }
 
@@ -48,6 +52,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
       ttsEnabled: prefs.getBool('ttsEnabled') ?? true,
       ageGroup: AgeGroup.values[prefs.getInt('ageGroup') ?? 1],
       confidenceThreshold: prefs.getDouble('confidenceThreshold') ?? 0.85,
+      focusIntensity: prefs.getDouble('focusIntensity') ?? AgeGroup.values[prefs.getInt('ageGroup') ?? 1].defaultFocusIntensity,
     );
   }
 
@@ -58,6 +63,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
     await prefs.setBool('ttsEnabled', state.ttsEnabled);
     await prefs.setInt('ageGroup', state.ageGroup.index);
     await prefs.setDouble('confidenceThreshold', state.confidenceThreshold);
+    await prefs.setDouble('focusIntensity', state.focusIntensity);
   }
 
   Future<void> setAppLanguage(String lang) async {
@@ -76,7 +82,12 @@ class SettingsNotifier extends Notifier<AppSettings> {
   }
 
   Future<void> setAgeGroup(AgeGroup group) async {
-    state = state.copyWith(ageGroup: group);
+    state = state.copyWith(ageGroup: group, focusIntensity: group.defaultFocusIntensity);
+    await _save();
+  }
+
+  Future<void> setFocusIntensity(double intensity) async {
+    state = state.copyWith(focusIntensity: intensity);
     await _save();
   }
 
