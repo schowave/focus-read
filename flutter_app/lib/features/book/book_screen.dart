@@ -19,6 +19,10 @@ class BookScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
+        ),
         title: bookAsync.when(
           data: (book) => Text(book.title),
           loading: () => const Text(''),
