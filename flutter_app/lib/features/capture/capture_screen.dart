@@ -231,6 +231,7 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
         titleTextStyle: const TextStyle(
           fontFamily: 'Quicksand',
           fontSize: 20,
@@ -240,12 +241,12 @@ class _CaptureScreenState extends ConsumerState<CaptureScreen> {
         title: const Text('Capture Page'),
         actions: [
           IconButton(
-            icon: Icon(_flashIcon),
+            icon: Icon(_flashIcon, color: Colors.white),
             onPressed: _isInitialized && !isProcessing ? _toggleFlash : null,
             tooltip: 'Toggle flash',
           ),
           IconButton(
-            icon: const Icon(Icons.photo_library),
+            icon: const Icon(Icons.photo_library, color: Colors.white),
             onPressed: !isProcessing ? _pickFromGallery : null,
             tooltip: 'Choose from gallery',
           ),
