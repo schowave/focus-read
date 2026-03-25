@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 // Color palette: "Leseecke" — warm, soft, inviting
@@ -153,4 +154,24 @@ final focusReadTheme = ThemeData(
     labelStyle: const TextStyle(fontFamily: 'Nunito', color: AppColors.textLight),
   ),
   dividerColor: AppColors.divider,
+);
+
+CupertinoThemeData get focusReadCupertinoTheme => CupertinoThemeData(
+  primaryColor: AppColors.primary,
+  scaffoldBackgroundColor: AppColors.background,
+  textTheme: const CupertinoTextThemeData(
+    primaryColor: AppColors.textDark,
+    navTitleTextStyle: TextStyle(
+      fontFamily: 'Quicksand',
+      fontSize: 18,
+      fontWeight: FontWeight.w600,
+      color: AppColors.textDark,
+    ),
+    navLargeTitleTextStyle: TextStyle(
+      fontFamily: 'Quicksand',
+      fontSize: 34,
+      fontWeight: FontWeight.w700,
+      color: AppColors.textDark,
+    ),
+  ),
 );
