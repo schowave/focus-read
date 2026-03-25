@@ -123,6 +123,14 @@ class AppDatabase extends _$AppDatabase {
     final result = await query.getSingle();
     return result.read(count)!;
   }
+
+  Stream<int> watchPageCount(String bookId) {
+    final count = countAll();
+    final query = selectOnly(pages)
+      ..addColumns([count])
+      ..where(pages.bookId.equals(bookId));
+    return query.watchSingle().map((row) => row.read(count)!);
+  }
 }
 
 LazyDatabase _openConnection() {

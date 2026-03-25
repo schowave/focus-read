@@ -8,9 +8,9 @@ final booksProvider = StreamProvider<List<Book>>((ref) {
 });
 
 final bookPageCountProvider =
-    FutureProvider.family<int, String>((ref, bookId) {
+    StreamProvider.family<int, String>((ref, bookId) {
   final db = ref.watch(databaseProvider);
-  return db.getPageCount(bookId);
+  return db.watchPageCount(bookId);
 });
 
 final deleteBookProvider = Provider<Future<void> Function(String)>((ref) {
