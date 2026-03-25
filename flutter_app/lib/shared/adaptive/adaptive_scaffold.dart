@@ -29,6 +29,7 @@ class AdaptiveScaffold extends StatelessWidget {
         navigationBar: CupertinoNavigationBar(
           middle: titleWidget ?? (title != null ? Text(title!) : null),
           leading: leading,
+          automaticallyImplyLeading: leading == null,
           trailing: actions != null && actions!.isNotEmpty
               ? Row(
                   mainAxisSize: MainAxisSize.min,
