@@ -12,7 +12,7 @@ run: venv
 	venv/bin/python backend/main.py
 
 lint: venv
-	venv/bin/pip install -q ruff
+	venv/bin/pip install -q -r backend/requirements-dev.txt
 	venv/bin/ruff check backend/
 
 test: venv
