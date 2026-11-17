@@ -1,0 +1,6 @@
+# backend/ is the import root: main.py imports ocr as a first-party module.
+src = ["backend"]
+
+[lint.flake8-bugbear]
+# FastAPI declares parameters as default values by design.
+extend-immutable-calls = ["fastapi.File"]

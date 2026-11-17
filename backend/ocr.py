@@ -1,7 +1,7 @@
 import re
 
 from doctr.io import DocumentFile
-from doctr.models import ocr_predictor, from_hub
+from doctr.models import from_hub, ocr_predictor
 
 # Load models once at startup
 _predictor = None
@@ -61,9 +61,7 @@ def _is_real_word(text: str) -> bool:
         return False
     if re.search(r'[(){}\[\]]', text):
         return False
-    if re.search(r'\w\.\w', text):
-        return False
-    return True
+    return not re.search(r'\w\.\w', text)
 
 
 def get_image_dimensions(image_path: str) -> tuple[int, int]:
