@@ -24,7 +24,7 @@ Open `http://localhost:8000` on your phone or tablet (same network).
 
 ### Prerequisites
 
-- **Python 3.10+**
+- **Python 3.11–3.14** (fastapi, python-doctr and Pillow need 3.11+; some doctr dependencies have no 3.15 wheels yet)
 
 No system-level OCR engine required. ML models are downloaded automatically on first run (~200 MB, cached afterwards).
 

@@ -21,10 +21,11 @@
       "automerge": true
     },
     {
-      "description": "Hold the CI Python at 3.14: h5py, pyclipper and pyyaml (pulled in by python-doctr) have no 3.15 wheels yet, so pip builds them from source and the install fails. Raise this once they ship cp315 wheels.",
+      "description": "New CI Python minors (3.15+) wait for approval on the Dependency Dashboard: h5py, pyclipper and pyyaml (pulled in by python-doctr) have no 3.15 wheels yet, so pip builds them from source and the install fails. Approve there once they ship wheels for the new version.",
       "matchDepNames": ["python"],
       "matchManagers": ["github-actions"],
-      "allowedVersions": "<3.15"
+      "matchUpdateTypes": ["minor"],
+      "dependencyDashboardApproval": true
     }
   ]
 }
