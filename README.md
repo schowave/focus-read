@@ -38,6 +38,14 @@ No system-level OCR engine required. ML models are downloaded automatically on f
 | `make test`    | Run OCR on example image (smoke test) |
 | `make clean`   | Remove virtualenv and uploaded files  |
 
+With [mise](https://mise.jdx.dev/) (pins Python and uv, venv in `.venv`; this is what CI runs):
+
+| Command          | Description                                                        |
+|------------------|--------------------------------------------------------------------|
+| `mise run setup` | Install runtime and dev dependencies into `.venv`                  |
+| `mise run check` | Everything CI checks: `lint` (ruff) and `test` (smoke tests)       |
+| `mise run dev`   | Start the server on port 8000                                      |
+
 ## Tech stack
 
 | Layer        | Technology                                                                                                                                                     |

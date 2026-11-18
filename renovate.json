@@ -21,9 +21,9 @@
       "automerge": true
     },
     {
-      "description": "New CI Python minors (3.15+) wait for approval on the Dependency Dashboard: h5py, pyclipper and pyyaml (pulled in by python-doctr) have no 3.15 wheels yet, so pip builds them from source and the install fails. Approve there once they ship wheels for the new version.",
+      "description": "New Python minors (3.15+) in mise.toml wait for approval on the Dependency Dashboard: h5py, pyclipper and pyyaml (pulled in by python-doctr) have no 3.15 wheels yet, so the install builds them from source and fails. Approve there once they ship wheels for the new version.",
       "matchDepNames": ["python"],
-      "matchManagers": ["github-actions"],
+      "matchManagers": ["mise"],
       "matchUpdateTypes": ["minor"],
       "dependencyDashboardApproval": true
     }
